@@ -10,7 +10,8 @@ interface Props{
 function MovieList({discoverMovies,status}:Props) {
   
   return (
-    <div className='flex overflow-x-auto gap-2 mb-5'>
+    <div className='flex overflow-x-auto gap-2 mb-5  '>
+      
       {status === 'FAILED' ? <h1>Sorry Somthing Went Wrong Please Try Again Later</h1> :
         status === 'LOADING' ? <h1>Loading ...</h1> :
         discoverMovies.map((movie)=>(

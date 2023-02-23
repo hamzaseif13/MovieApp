@@ -4,40 +4,53 @@ import { RootState } from "../../store/store";
 
 
 const URL = import.meta.env.VITE_API_URL
-const API_KEY =import.meta.env.VITE_API_KEY
+const API_KEY = import.meta.env.VITE_API_KEY
 
 export const fetchDiscoverMovies = createAsyncThunk('movies/discover', async () => {
     const params = new URLSearchParams({ sort_by: "popularity.desc", language: "en-US", api_key: API_KEY })
     const req = await fetch(`https://api.themoviedb.org/3/discover/movie?` + params)
-    return  req.json();
+    return req.json();
 })
-export const fetchGenres = createAsyncThunk('movies/genres',async()=>{
-    const req = await fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}`)
-    return req.json() 
+export const fetchGenres = createAsyncThunk('movies/genres', async (page?: number) => {
+    const params = new URLSearchParams({ api_key: API_KEY, sort_by: "popularity.desc" })
+    if (page) params.set('page', String(page))
+    const req = await fetch(`https://api.themoviedb.org/3/genre/movie/list?` + params)
+    return req.json()
 })
-
-export const fetchMovies = createAsyncThunk('movies/movies',async({query,year,genreId}:{query?:string,year?:number,genreId?:number})=>{
-    const params = new URLSearchParams({api_key:API_KEY,sort_by: "popularity.desc"})
-    console.log(query,year,genreId);
-    if(year){
-        params.set('year',String(year))
-    }
-    if(genreId){
-        params.set('with_genres',String(genreId))
-        const req = await fetch(`https://api.themoviedb.org/3/discover/movie?` + params)
-        return req.json()
-    }
-    if(query){
-        params.set('query',query)
-    }
-    const req = await fetch(`https://api.themoviedb.org/3/search/movie?` + params)
-    return  req.json();
-})
+interface FetchOptions {
+    query?: string
+    year?: string
+    genreId?: number
+    page?: number
+}
+export const fetchMovies = createAsyncThunk('movies/movies',
+    async ({ query, year, genreId, page }:FetchOptions) => {
+        const params = new URLSearchParams({ api_key: API_KEY, sort_by: "popularity.desc" })
+        if (year) {
+            params.set('year', String(year))
+        }
+        if(page){
+            params.set('page', String(page))
+        }
+        if (genreId) {
+            params.set('with_genres', String(genreId))
+            const req = await fetch(`https://api.themoviedb.org/3/discover/movie?` + params)
+            return req.json()
+        }
+        if (query) {
+            params.set('query', query)
+        }
+        const req = await fetch(`https://api.themoviedb.org/3/search/movie?` + params)
+        return req.json();
+    })
 const initialState: MoviesState = {
     movies: [],
     genres: [],
     discoverMovies: [],
-    status: 'IDLE'
+    status: 'IDLE',
+    pageSettings: {
+        page: 1
+    }
 }
 
 interface MoviesState {
@@ -49,6 +62,12 @@ interface MoviesState {
     selectedRating?: number,
     data?: any,
     status: 'IDLE' | 'LOADING' | 'SUCCEEDED' | 'FAILED'
+    pageSettings: IPagination
+}
+interface IPagination {
+    page: number
+    totalPages?: number
+    totalEntries?: number
 }
 export interface Movie {
     posterPath?: string
@@ -81,35 +100,43 @@ const moviesSlice = createSlice({
             state.status = 'SUCCEEDED'
             state.discoverMovies = apiParser(action.payload)
         }).
-        addCase(fetchDiscoverMovies.pending, (state, action) => {
-            state.status = 'LOADING'
-        }).
-        addCase(fetchDiscoverMovies.rejected, (state, action) => {
-            state.status = 'FAILED'
-        }).
-        addCase(fetchGenres.fulfilled,(state,action)=>{
-            state.genres = action.payload.genres as Genre[]
-        }).
-        addCase(fetchGenres.rejected,(state,action)=>{
-            state.status = 'FAILED'
-        }).
-        addCase(fetchGenres.pending,(state,action)=>{
-            state.status = 'LOADING'
-        }).
-        addCase(fetchMovies.fulfilled,(state,action)=>{
-            state.movies = apiParser(action.payload)
-        }).
-        addCase(fetchMovies.pending,(state,action)=>{
-            state.status = 'LOADING'
-        }).
-        addCase(fetchMovies.rejected,(state,action)=>{
-            state.status = 'FAILED'
-        })
+            addCase(fetchDiscoverMovies.pending, (state, action) => {
+                state.status = 'LOADING'
+            }).
+            addCase(fetchDiscoverMovies.rejected, (state, action) => {
+                state.status = 'FAILED'
+            }).
+
+            addCase(fetchGenres.fulfilled, (state, action) => {
+                state.status = 'SUCCEEDED'
+                state.genres = action.payload.genres as Genre[]
+            }).
+            addCase(fetchGenres.rejected, (state, action) => {
+                state.status = 'FAILED'
+            }).
+            addCase(fetchGenres.pending, (state, action) => {
+                state.status = 'LOADING'
+            }).
+            addCase(fetchMovies.fulfilled, (state, action) => {
+                state.status = 'SUCCEEDED'
+                const { page, total_results, total_pages } = action.payload
+                state.pageSettings = {
+                    page,
+                    totalEntries: total_results,
+                    totalPages: total_pages
+                }
+                state.movies = apiParser(action.payload)
+            }).
+            addCase(fetchMovies.pending, (state, action) => {
+                state.status = 'LOADING'
+            }).
+            addCase(fetchMovies.rejected, (state, action) => {
+                state.status = 'FAILED'
+            })
     },
 })
 function apiParser(data: any): Movie[] {
-    const unparsedMovies = data.results;
-    return unparsedMovies.map((movie: any) => (
+    return data.results.map((movie: any) => (
         {
             posterPath: movie.poster_path,
             adult: movie.adult,
@@ -127,10 +154,11 @@ function apiParser(data: any): Movie[] {
             voteAverage: movie.vote_average
         }
     ))
-
 }
-export const getDiscoverMovies = (state:RootState)=>state.moviesReducer.discoverMovies
-export const getStatus = (state:RootState)=>state.moviesReducer.status
-export const getGenres = (state:RootState) => state.moviesReducer.genres
-export const getMovies = (state:RootState) => state.moviesReducer.movies
+export const getDiscoverMovies = (state: RootState) => state.moviesReducer.discoverMovies
+export const getStatus = (state: RootState) => state.moviesReducer.status
+export const getGenres = (state: RootState) => state.moviesReducer.genres
+export const getMovies = (state: RootState) => state.moviesReducer.movies
+export const getPageSettings = (state: RootState) => state.moviesReducer.pageSettings
+export const { } = moviesSlice.actions
 export default moviesSlice.reducer
