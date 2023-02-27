@@ -3,20 +3,33 @@ import searchIcon from '../assets/searchIcon.svg'
 import { HeartIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
-import { selectHistory, selectWatchList } from '../features/watchlist/watchlistSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { changeLang, selectHistory, selectLang, selectWatchList } from '../features/watchlist/watchlistSlice'
+import { AppDispatch } from '../store/store'
 function Navbar() {
+
     const [query, setQuery] = useState('');
     const [open, setOpen] = useState(false)
     const navigate = useNavigate();
     const location = useLocation()
     const history = useSelector(selectHistory)
     const watchList = useSelector(selectWatchList)
+    const dispatch = useDispatch<AppDispatch>()
+    const lang = useSelector(selectLang);
+
     const handleSearch = (e: any) => {
         e.preventDefault()
         location.search = '?query' + query
         navigate(`search`, { state: query })
         setOpen(false)
+    }
+    const toggleLang=()=>{
+       if(lang==='AR'){
+        dispatch(changeLang('EN'))
+       }
+       else{
+        dispatch(changeLang('AR'))
+       }
     }
     return (
         <header className='bg-darkblue' >
@@ -27,6 +40,9 @@ function Navbar() {
                     </Link>
                 </div>
                 <div className='flex items-center gap-2 '>
+                    <div onClick={toggleLang} className='border hover:bg-white hover:text-black hover:cursor-pointer text-white px-1 rounded-sm'>
+                        <h2>{lang=='AR'? 'EN':"AR"}</h2>
+                    </div>
                     <div className=''>
                         <Link to='stored'>
                             <HeartIcon className='w-8  ' color={(history.length>0 || watchList.length>0)?'red':'#01B4E4' } />

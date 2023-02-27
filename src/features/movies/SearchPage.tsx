@@ -58,7 +58,7 @@ function SearchPage() {
 
                 {status === 'LOADING' ? <h1>Loading ...</h1> : status === 'SUCCEEDED' ? (
                     <div className='flex flex-wrap gap-1'>
-                        {movies.length>0 ? movies.map(movie => {
+                        {movies.length>0 ? movies.slice(0,14).map(movie => {
                             return <MovieCard key={movie.id} movie={movie} />
                         }): <h1 className='text-center'>No results</h1>}
                     </div>

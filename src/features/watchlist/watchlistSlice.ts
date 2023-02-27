@@ -14,12 +14,14 @@ function getFromLocal(key:string){
 }
 const initialState:WatchListState ={
    history:getFromLocal('history'),
-   watchList:getFromLocal('watchList')
+   watchList:getFromLocal('watchList'),
+   lang:'EN'
 }
 console.log('initial ', initialState);
 interface WatchListState{
     history:StoredMovie[],
-    watchList:StoredMovie[]
+    watchList:StoredMovie[],
+    lang:'AR'|'EN'
 }
 export interface StoredMovie{
     id:number
@@ -32,6 +34,15 @@ const watchlistSlice = createSlice({
     name:"watchlist",
     initialState,
     reducers:{
+        changeLang:(state,action:PayloadAction<'AR'|'EN'>)=>{
+            if(action.payload=='AR'){
+                document.body.dir = 'rtl'
+            }
+            else{  
+                document.body.dir = 'ltr'
+            }
+            state.lang = action.payload;
+        },
         toggleLocal:(state,action:PayloadAction<{key:string,movie:StoredMovie}>)=>{
             const {movie,key} =action.payload
             if(isStored(key,movie)){
@@ -72,4 +83,5 @@ function isStored(key:string,item:StoredMovie):boolean{
 export default watchlistSlice.reducer
 export const selectWatchList = (state:RootState)=>state.watchlistReducer.watchList
 export const selectHistory = (state:RootState)=>state.watchlistReducer.history
-export const {toggleLocal} = watchlistSlice.actions
+export const selectLang = (state:RootState) => state.watchlistReducer.lang
+export const {toggleLocal,changeLang} = watchlistSlice.actions

@@ -22,6 +22,7 @@ function App() {
             <Route path='history' element={<History/>}/>
             <Route path='search' element={<SearchPage/>}/>
             <Route path='stored' element={<History/>}/>
+          
         </Routes>
       <Footer/>
 
