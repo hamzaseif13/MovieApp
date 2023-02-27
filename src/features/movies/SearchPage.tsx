@@ -7,7 +7,6 @@ import { fetchGenres, fetchMovies, getGenres, getMovies, getStatus } from './mov
 import Pagination from './Pagination';
 
 function SearchPage() {
-    console.log('IM RENDERING');
     const location = useLocation()
     const [searchParams, setSearchParams] = useSearchParams()
     const [genreId, setGenreId] = useState<number>();
@@ -19,10 +18,11 @@ function SearchPage() {
     const status = useSelector(getStatus)
     useEffect(() => {
         const pathQuery = location.state
-        dispatch(fetchGenres())
         if (pathQuery) {
+            setQuery(pathQuery)
             dispatch(fetchMovies({ query: pathQuery, genreId, year }))
         }
+        dispatch(fetchGenres())
 
     }, [])
     const changeGenre = (event: any) => {
