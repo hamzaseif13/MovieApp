@@ -75,7 +75,7 @@ function SingleMovie() {
             <div className='md:ml-10'>
               <h1 className='text-4xl  font-extrabold'>{movie.title} <span className='opacity-70 font-light'>({movie.release_date.slice(0, 4)})</span></h1>
               <div className='opacity-75'>
-                <span className='mr-2'>{movie.release_date} ({movie.production_countries[0].iso_3166_1})</span>
+                <span className='mr-2'>{movie.release_date} ({movie.production_countries[0]?.iso_3166_1})</span>
                 <span>{(movie.genres as Genre[]).map(genre => genre.name).join(', ')}</span>
                 <span className='ml-2'>{humanTime(movie.runtime as number)}</span>
               </div>

@@ -8,7 +8,7 @@ import Pagination from './Pagination';
 
 function SearchPage() {
     const location = useLocation()
-    const [searchParams, setSearchParams] = useSearchParams()
+
     const [genreId, setGenreId] = useState<number>();
     const [year, setYear] = useState<string>()
     const [query, setQuery] = useState<string>('')
