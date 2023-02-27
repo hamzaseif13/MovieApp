@@ -14,9 +14,12 @@ function History() {
             <button onClick={()=>setIsHistory(true)} className={`rounded-full py-1 px-5  block ${isHistory && 'text-[rgb(30,213,169)] bg-darkblue'}`} >History</button>
             <button onClick={()=>setIsHistory(false)} className={`rounded-full py-1 px-5  block ${!isHistory && 'text-[rgb(30,213,169)] bg-darkblue'}`}>Watch list</button>
           </div>
-        {list.map(movie=>(
-          <MovieCard movie={movie} key={movie.id}/>
-        ))}
+          <div className='flex flex-wrap gap-1'>
+
+          {list.map(movie=>(
+            <MovieCard movie={movie} key={movie.id}/>
+            ))}
+          </div>
     </main>
   )
 }
