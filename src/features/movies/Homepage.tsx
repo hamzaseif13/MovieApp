@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import MoviesLanding from './MoviesLanding'
 import MovieList from './MovieList'
 import { ArrowRightIcon} from '@heroicons/react/20/solid'
@@ -10,19 +10,21 @@ function Homepage() {
   const discoverMovies = useSelector(getDiscoverMovies)
   const status = useSelector(getStatus)
   const dispatch = useDispatch<AppDispatch>();
-
+  const [active,setActive] = useState(true)
   useEffect(() => {
-    dispatch(fetchDiscoverMovies())
-  }, [])
-
+    dispatch(fetchDiscoverMovies(active?'day':'week'))
+  }, [active])  
+  
   return (
     <main className=''>
       <MoviesLanding />
-     
       <section className='max-w-main  ltr:pl-10 rtl:pr-10 m-auto fade-aw  ltr:after:right-0  rtl:after:left-0 relative'>
-        <div className='flex items-center'>
-          <h2 className='text-2xl font-extrabold my-4 '>Trending</h2>
-         
+        <div className='flex  items-center'>
+          <h2 className='text-2xl font-extrabold my-6 '>Trending</h2>
+          <div className='ml-5 border-darkblue border rounded-full flex'>
+            <button onClick={()=>setActive(true)} className={`rounded-full py-1 px-5  block ${active && 'text-[rgb(30,213,169)] bg-darkblue'}`} >Today</button>
+            <button onClick={()=>setActive(false)} className={`rounded-full py-1 px-5  block ${!active && 'text-[rgb(30,213,169)] bg-darkblue'}`}>This Week</button>
+          </div>
         </div>
         <MovieList discoverMovies={discoverMovies} status={status} />
       </section>

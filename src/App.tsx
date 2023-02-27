@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import Footer from './components/Footer'
 import Navbar from './components/Navbar'
 import Homepage from './features/movies/Homepage'
 import MoviesSearch from './features/movies/MoviesLanding'
@@ -16,11 +17,14 @@ function App() {
       <Navbar/>
         <Routes>
             <Route path='/' element={<Homepage/>} />
-            <Route path='/movie/:id' element={<SingleMovie/>}/>
+            <Route path='/movies/:id' element={<SingleMovie/>}/>
             <Route path='/watchlist' element={<Watchlist/>}/>
             <Route path='history' element={<History/>}/>
             <Route path='search' element={<SearchPage/>}/>
+            <Route path='stored' element={<History/>}/>
         </Routes>
+      <Footer/>
+
     </BrowserRouter>
   )
 }

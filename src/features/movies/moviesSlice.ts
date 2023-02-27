@@ -6,9 +6,11 @@ import { RootState } from "../../store/store";
 const URL = import.meta.env.VITE_API_URL
 const API_KEY = import.meta.env.VITE_API_KEY
 
-export const fetchDiscoverMovies = createAsyncThunk('movies/discover', async () => {
-    const params = new URLSearchParams({ sort_by: "popularity.desc", language: "en-US", api_key: API_KEY })
-    const req = await fetch(`https://api.themoviedb.org/3/discover/movie?` + params)
+export const fetchDiscoverMovies = createAsyncThunk('movies/discover', async (time: string) => {
+    const params = new URLSearchParams({
+        sort_by: "popularity.desc", language: "en-US", api_key: API_KEY
+    })
+    const req = await fetch(`https://api.themoviedb.org/3/trending/movie/`+time+'?' + params)
     return req.json();
 })
 export const fetchGenres = createAsyncThunk('movies/genres', async (page?: number) => {
@@ -24,12 +26,12 @@ interface FetchOptions {
     page?: number
 }
 export const fetchMovies = createAsyncThunk('movies/movies',
-    async ({ query, year, genreId, page }:FetchOptions) => {
+    async ({ query, year, genreId, page }: FetchOptions) => {
         const params = new URLSearchParams({ api_key: API_KEY, sort_by: "popularity.desc" })
         if (year) {
             params.set('year', String(year))
         }
-        if(page){
+        if (page) {
             params.set('page', String(page))
         }
         if (genreId) {
@@ -85,7 +87,7 @@ export interface Movie {
     video: boolean
     voteAverage: number
 }
-interface Genre {
+export interface Genre {
     name: string
     id: number
 }
@@ -125,7 +127,7 @@ const moviesSlice = createSlice({
                     totalEntries: total_results,
                     totalPages: total_pages
                 }
-                state.movies = apiParser(action.payload)
+                state.movies = apiParser(action.payload).sort((a, b) => b.voteAverage - a.voteAverage)
             }).
             addCase(fetchMovies.pending, (state, action) => {
                 state.status = 'LOADING'
@@ -160,5 +162,5 @@ export const getStatus = (state: RootState) => state.moviesReducer.status
 export const getGenres = (state: RootState) => state.moviesReducer.genres
 export const getMovies = (state: RootState) => state.moviesReducer.movies
 export const getPageSettings = (state: RootState) => state.moviesReducer.pageSettings
-export const { } = moviesSlice.actions
+
 export default moviesSlice.reducer
