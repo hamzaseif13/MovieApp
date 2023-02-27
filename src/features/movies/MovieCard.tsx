@@ -61,13 +61,13 @@ function MovieCard({ movie }: Props) {
         />
       </div>
       <div className="absolute top-1 rtl:-left-1 ltr:-right-1 z-10">
-        <Menu  >
+        <Menu   >
           {({ isOpen }) => (
             <>
               <MenuButton isActive={isOpen} as={Button} rightIcon={<ChevronDownIcon />}>
                 <EllipsisHorizontalIcon className="w-6 h-6 bg-gray-300 rounded-full " />
               </MenuButton>
-              <MenuList   >
+              <MenuList  marginInlineStart={"-96"} >
                 <MenuItem onClick={() => toggleLocal('watchList')}roundedTop="5" backgroundColor={"white"} _hover={{ backgroundColor: "gray" }} p='10px'>
                 <BookmarkIcon className="w-4 mx-2 " color={isWatchlist() ? 'red' : 'black'} />
                 Watchlist
