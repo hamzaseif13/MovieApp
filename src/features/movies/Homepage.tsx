@@ -18,7 +18,7 @@ function Homepage() {
   return (
     <main className=''>
       <MoviesLanding />
-      <section className='max-w-main  ltr:pl-10 rtl:pr-10 m-auto fade-aw  ltr:after:right-0  rtl:after:left-0 relative'>
+      <section className='max-w-main  min-h-[32rem] ltr:pl-10 rtl:pr-10 m-auto fade-aw  ltr:after:right-0  rtl:after:left-0 relative'>
         <div className='flex  items-center'>
           <h2 className='text-2xl font-extrabold my-6 '>Trending</h2>
           <div className='ml-5 border-darkblue border rounded-full flex'>

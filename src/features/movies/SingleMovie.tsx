@@ -101,7 +101,7 @@ function SingleMovie() {
                     <BookmarkIcon className='rounded-full w-4 hover:text-red-400' color={isWatchlist()?'red':'white'} />
                   </button>
                   <button onClick={()=>toggleLocal('history')}className='bg-dark rounded-full w-fit p-3' title="add to History">
-                    <HeartIcon className='rounded-full w-4 hover:text-red-400' color={isHistory()?'red':'white'} />
+                    <HeartIcon  className='rounded-full w-4 hover:text-red-400' color={isHistory()?'red':'white'} />
                   </button>
                 </div>
                 <div onClick={openTrailer} className=' hover:cursor-pointer hover:opacity-75 items-center ml-4 hidden md:flex'>
